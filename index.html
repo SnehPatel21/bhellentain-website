@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Will You Be My Valentine? 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .bear-container {
+            font-size: clamp(80px, 20vw, 150px);
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            color: #d63384;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+
+        .btn-yes {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a5a);
+            color: white;
+            box-shadow: 0 4px 15px rgba(238, 90, 90, 0.4);
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(238, 90, 90, 0.6);
+        }
+
+        .btn-no {
+            background: linear-gradient(45deg, #a8a8a8, #888);
+            color: white;
+            position: absolute;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            color: #d63384;
+            font-style: italic;
+            min-height: 30px;
+            font-weight: 500;
+        }
+
+        /* Floating hearts background */
+        .heart {
+            position: fixed;
+            color: rgba(255, 105, 135, 0.6);
+            animation: float linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Success screen */
+        .success-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 50%, #ffc0cb 100%);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .success-screen h1 {
+            color: white;
+            font-size: clamp(2rem, 8vw, 4rem);
+            margin-bottom: 20px;
+            animation: pulse 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .success-screen .emoji {
+            font-size: clamp(100px, 30vw, 200px);
+            animation: spin 2s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            0%, 100% { transform: rotate(-10deg) scale(1); }
+            50% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        .success-screen p {
+            color: white;
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            margin-top: 20px;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            animation: confetti-fall linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .attempts-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #d63384;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bear-container">🧸💝</div>
+        <h1>Will you be my Valentine?</h1>
+        <div class="buttons">
+            <button class="btn btn-yes" onclick="sayYes()">Yes! 💖</button>
+            <button class="btn btn-no" id="noBtn">No 😢</button>
+        </div>
+        <p class="message" id="message"></p>
+    </div>
+
+    <div class="attempts-counter" id="attempts"></div>
+
+    <div class="success-screen" id="successScreen">
+        <div class="emoji">💕</div>
+        <h1>YAAAY!</h1>
+        <p>I knew you'd say yes! 🥰</p>
+        <p style="margin-top: 40px; font-size: 3rem;">💑</p>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const message = document.getElementById('message');
+        const attemptsEl = document.getElementById('attempts');
+        let attempts = 0;
+
+        const funnyMessages = [
+            "Hehe, you can't click me! 😜",
+            "Nice try! But no. 🏃‍♂️",
+            "I'm too fast for you! ⚡",
+            "Just say YES already! 💕",
+            "Why are you even trying? 🤔",
+            "The Yes button is RIGHT THERE! 👉",
+            "I will NEVER let you click me! 🙅",
+            "You're just making this harder! 😤",
+            "Accept your fate! Say YES! 💖",
+            "I can do this all day! 🦸",
+            "Resistance is futile! 🤖",
+            "Your mouse skills need work! 🖱️",
+            "Almost got me! ...NOT! 😂",
+            "The answer is YES, trust me! ✨",
+            "I'm basically uncatchable! 🏃💨",
+            "You're adorable for trying! 🥺",
+            "Plot twist: You actually want to say Yes! 💝",
+            "I believe in you... to click YES! 🌟"
+        ];
+
+        const noBtnTexts = [
+            "No 😢",
+            "Are you sure? 🥺",
+            "Really? 😭",
+            "Think again! 💔",
+            "Please? 🙏",
+            "Don't do this 😿",
+            "I'll cry 😢",
+            "Reconsider? 🌹",
+            "Pretty please? 🥹",
+            "Last chance! 💘"
+        ];
+
+        function getRandomPosition() {
+            const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+            const x = Math.max(20, Math.random() * maxX);
+            const y = Math.max(20, Math.random() * maxY);
+            return { x, y };
+        }
+
+        function moveButton() {
+            attempts++;
+            const pos = getRandomPosition();
+            noBtn.style.left = pos.x + 'px';
+            noBtn.style.top = pos.y + 'px';
+
+            // Change button text
+            noBtn.textContent = noBtnTexts[Math.min(attempts, noBtnTexts.length - 1)];
+
+            // Show funny message
+            message.textContent = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+
+            // Update attempts counter after 5 attempts
+            if (attempts >= 5) {
+                attemptsEl.textContent = `Attempts to say no: ${attempts} 😂`;
+            }
+
+            // Make button smaller after many attempts
+            if (attempts > 10) {
+                const scale = Math.max(0.5, 1 - (attempts - 10) * 0.05);
+                noBtn.style.transform = `scale(${scale})`;
+            }
+
+            // Button gets faster (stays in position for less time)
+            noBtn.style.transition = `all ${Math.max(0.1, 0.3 - attempts * 0.02)}s ease`;
+        }
+
+        // Desktop hover
+        noBtn.addEventListener('mouseenter', moveButton);
+
+        // Mobile touch - move before they can tap
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveButton();
+        }, { passive: false });
+
+        // Also move on click just in case
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveButton();
+        });
+
+        function sayYes() {
+            document.getElementById('successScreen').style.display = 'flex';
+            createConfetti();
+            createHeartExplosion();
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6b9d', '#c9b1ff'];
+
+            for (let i = 0; i < 150; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                    confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 20);
+            }
+        }
+
+        function createHeartExplosion() {
+            const hearts = ['💕', '💖', '💗', '💓', '💝', '💘', '❤️', '🧡', '💛', '💚', '💙', '💜'];
+
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'confetti';
+                    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.fontSize = (Math.random() * 30 + 20) + 'px';
+                    heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    heart.style.background = 'none';
+                    document.body.appendChild(heart);
+
+                    setTimeout(() => heart.remove(), 5000);
+                }, i * 100);
+            }
+        }
+
+        // Create floating hearts background
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = ['💕', '💖', '💗', '❤️', '💓'][Math.floor(Math.random() * 5)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            document.body.appendChild(heart);
+
+            setTimeout(() => heart.remove(), 10000);
+        }
+
+        // Create hearts periodically
+        setInterval(createFloatingHeart, 500);
+
+        // Create some initial hearts
+        for (let i = 0; i < 10; i++) {
+            setTimeout(createFloatingHeart, i * 200);
+        }
+
+        // Position the No button initially
+        window.addEventListener('load', () => {
+            const pos = getRandomPosition();
+            noBtn.style.left = pos.x + 'px';
+            noBtn.style.top = pos.y + 'px';
+        });
+
+        // Reposition on resize
+        window.addEventListener('resize', () => {
+            const pos = getRandomPosition();
+            noBtn.style.left = pos.x + 'px';
+            noBtn.style.top = pos.y + 'px';
+        });
+    </script>
+</body>
+</html>
